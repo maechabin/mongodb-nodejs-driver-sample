@@ -8,64 +8,76 @@ const url = 'mongodb://localhost:27017';
 const dbName = 'myDB';
 
 /** Create */
-const insertDocuments = (db) => {
+function insertDocuments(db) {
   /** collectionを取得 */
-  const collection = db.collection('myCollection2');
+  const collection = db.collection('myCollection');
   /** collectionにdocumentを追加 */
   collection.insertMany(
     [{ name: 'Dan', age: 18 }, { name: 'Bob', age: 22 }, { name: 'John', age: 30 }],
     (err, result) => {
+      // アサーションテスト
       assert.equal(err, null);
       assert.equal(3, result.result.n);
       assert.equal(3, result.ops.length);
+      /** 成功した旨をコンソールに出力 */
       console.log('Inserted 3 documents into the collection');
     },
   );
-};
+}
 
 /** Read */
-const findDocuments = (db) => {
+function findDocuments(db) {
   /** collectionを取得 */
-  const collection = db.collection('myCollection2');
+  const collection = db.collection('myCollection');
   /** documentを検索（ageが20以上のdocumentのnameを取得） */
   collection
     .find({})
     .project({ name: 1 })
     .toArray((err, docs) => {
+      // アサーションテスト
       assert.equal(err, null);
+      /** 成功した旨をコンソールに出力 */
       console.log('Found the following records');
+      /** 検索結果をコンソールに出力 */
       console.log(docs);
     });
-};
+}
 
 /** Update */
-const updateDocument = (db) => {
+function updateDocument(db) {
   /** collectionを取得 */
-  const collection = db.collection('myCollection2');
+  const collection = db.collection('myCollection');
   /** documentを更新（ageが19以下のdocumentに{ status: false }を追加） */
   collection.updateMany({ age: { $lt: 20 } }, { $set: { status: false } }, (err, result) => {
+    // アサーションテスト
     assert.equal(err, null);
     assert.equal(1, result.result.n);
+    /** 成功した旨をコンソールに出力 */
     console.log('Updated the document with the field a equal to 2');
   });
-};
+}
 
 /** Delete */
-const removeDocument = (db) => {
+function removeDocument(db) {
   /** collectionを取得 */
-  const collection = db.collection('myCollection2');
+  const collection = db.collection('myCollection');
   /** documentを削除（statusがfalseのdocuentを削除） */
   collection.deleteMany({ status: false }, (err, result) => {
+    // アサーションテスト
     assert.equal(err, null);
     assert.equal(1, result.result.n);
+    /** 成功した旨をコンソールに出力 */
     console.log('Removed the document with the field a equal to 3');
   });
-};
+}
 
 /** indexes */
-const indexCollection = (db, callback) => {
-  db.collection('myCollection2').createIndex({ name: 1 }, null, (err, results) => {});
-};
+function indexCollection(db) {
+  db.collection('myCollection').createIndex({ name: 1 }, null, (err, results) => {
+    /** 結果をコンソールに出力 */
+    console.log(results);
+  });
+}
 
 (async function() {
   let client;
@@ -80,11 +92,11 @@ const indexCollection = (db, callback) => {
     const db = client.db(dbName);
 
     await insertDocuments(db); // Create
-    await indexCollection(db); // Index
     await updateDocument(db); // Update
     await findDocuments(db); // Read
     await removeDocument(db); // Delete
     await findDocuments(db); // Read
+    await indexCollection(db); // Index
   } catch (err) {
     console.log(err.stack);
   }
