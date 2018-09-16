@@ -79,6 +79,7 @@ function indexCollection(db) {
   });
 }
 
+/** 即時関数をasync functionとして定義 */
 (async function() {
   let client;
 
@@ -91,13 +92,14 @@ function indexCollection(db) {
     /** DBを取得 */
     const db = client.db(dbName);
 
+    /** CRUDを行う関数をawitで待機させる */
     await insertDocuments(db); // Create
     await updateDocument(db); // Update
     await findDocuments(db); // Read
     await removeDocument(db); // Delete
     await findDocuments(db); // Read
-    await indexCollection(db); // Index
   } catch (err) {
+    /** DBサーバ接続に失敗した時の処理 */
     console.log(err.stack);
   }
 

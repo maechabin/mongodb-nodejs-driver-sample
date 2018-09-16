@@ -31,7 +31,7 @@ function insertDocuments(db, callback) {
 function findDocuments(db, callback) {
   /** collectionを取得 */
   const collection = db.collection('myCollection');
-  /** documentを検索（ageが20以上のdocumentのnameを取得） */
+  /** documentを検索（documentのnameを全件取得） */
   collection
     .find({})
     .project({ name: 1 })
@@ -81,7 +81,7 @@ function removeDocument(db, callback) {
 
 /** indexes */
 function indexCollection(db, callback) {
-  db.collection('myCollection').createIndex({ name: 1 }, null, (err, results) => {
+  db.collection('myCollection').createIndex({ name: -1 }, null, (err, results) => {
     /** 結果をコンソールに出力 */
     console.log(results);
     /** コールバック関数を実行 */
@@ -94,7 +94,9 @@ MongoClient.connect(
   url,
   { useNewUrlParser: true },
   (err, client) => {
+    /** errがnullではなかったら処理を停止 */
     assert.equal(null, err);
+    /** 成功した旨をコンソールに出力 */
     console.log('Connected successfully to server');
 
     /** DBを取得 */
